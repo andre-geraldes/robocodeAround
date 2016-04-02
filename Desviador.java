@@ -67,7 +67,7 @@ public class Desviador extends AdvancedRobot {
 		while(!finalizado){
 			if(!scanned){	
 				while(!scanned){
-					turnRight(4);
+					turnRight(2);
 				}
 			} else {
 		    	scanned = false;
@@ -125,12 +125,9 @@ public class Desviador extends AdvancedRobot {
 		}
 		
 		if(acabou){
-			scanned = true;	
-			int o = getOthers();
-			int n = o;
-			while(o > n-1) {
-				o = getOthers();
-				fire(3);
+			scanned = true;
+			while(scanned){
+		    fire(3);
 			}
 		}
 	}
@@ -188,6 +185,9 @@ public class Desviador extends AdvancedRobot {
 		scanned = false;
 	}
 	
+	public void onBulletMissed(BulletMissedEvent event){
+		scanned = false;
+	}
 	/*
 	 * 2 funções de calculo de distancias
 	 */
@@ -206,4 +206,3 @@ public class Desviador extends AdvancedRobot {
 
 	
 }
-
