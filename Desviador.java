@@ -14,10 +14,13 @@ import java.awt.Color;
 public class Desviador extends AdvancedRobot {
 	public ArrayList<String> robots = new ArrayList<String>();
 	public double distance = 0.0;
+	public double perimetro = 0.0;
 	public double distanceRobot = 0.0;
 	public double angulo;
   	public double lastX = 0.0;
   	public double lastY = 0.0;
+	public double lastRobotX = 0.0;
+	public double lastRobotY = 0.0;
 	public boolean scanned = true;
 	public boolean acabou = false;
 	public int i = 0;
@@ -34,14 +37,22 @@ public class Desviador extends AdvancedRobot {
 		distance = 0.0;
 		scanned = false; //para nao dar scan em falso
 		
-		while(i<3){
+		while(i<getOthers()){
 			initialScan();
 			i++;
 		}
 		
+		perimetro += Math.sqrt(Math.pow(getX(),2) + Math.pow(getY(),2)) - 100;
+			
+		setTurnRight(50);
+		ahead(100);
+		execute();
+		
 		goTo();
 		acabou = true;
 		System.out.println("Distancia: "+distance);
+		System.out.println("Perimetro: "+perimetro);
+		System.out.println("Ratio: "+distance/perimetro);
 		initialScan();
   	}
   	
@@ -82,36 +93,23 @@ public class Desviador extends AdvancedRobot {
 			//stop();
 			
 			if(robots.size()>=1){
+				perimetro += event.getDistance();
 				//voltar a posicao
 				double h = getHeading() - angulo;
 				turnLeft(h);
 				//rodar 
-				/*
-				double ang = 0; 
-				double move = h/10;
-				while(ang < h){
-					ahead(10);
-					turnRight(move);
-					ang += move;
-				}
-				*/
 				double total = 300/(360/h);
-				/*
-				while(move <= total){
-					
-					turnRight(h/30);
-					ahead(total/30);
-					move += total/30;
-				}
-				*/
+			
 				setTurnRight(h-7);
 				ahead(total);
 				execute();
 				
 				distanceRobot = Math.sqrt(Math.pow(60,2) + Math.pow(event.getDistance(),2));
-				ahead(distanceRobot);
+				ahead(distanceRobot-total/4);
 			}
 			else {
+				perimetro += event.getDistance();
+				
 				distanceRobot = Math.sqrt(Math.pow(60,2) + Math.pow(event.getDistance(),2));
 				angulo = Math.toDegrees(Math.atan(60/event.getDistance()));
 				
@@ -127,7 +125,7 @@ public class Desviador extends AdvancedRobot {
 		if(acabou){
 			scanned = true;
 			while(scanned){
-		    fire(3);
+		    	fire(3);
 			}
 		}
 	}
@@ -167,7 +165,7 @@ public class Desviador extends AdvancedRobot {
 		   	}
 		}
 		
-		if(robots.size() == 3){
+		if(robots.size() == getOthers()){
 			if(ang > 0){
 				turnRight(ang);
 			   	turnLeft(90);
